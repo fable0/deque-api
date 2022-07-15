@@ -14,14 +14,17 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     private void resizeLeft(int capacity) {
-        // To find the location of the latest first item, you reduce the "nextFirst" cursor back 1 element
+        // To find the location of the latest first item,
+        // you reduce the "nextFirst" cursor back 1 element
         int firstElement = nextFirst + 1;
         T[] newArray = (T[]) new Object[capacity];
         if (nextFirst == size - 1) { // If the first item is at element 0
             System.arraycopy(array, 0, newArray, size, size);
         } else { // If the first item is at any other element
-            // First it copies element starting at the latest front item and to end of the array
-            // Since you can't specify the end of the array, using "size - firstElement" will provide you the length
+            // First it copies element starting at the
+            // latest front item and to end of the array.
+            // Since you can't specify the end of the array,
+            // using "size - firstElement" will provide you the length
             // from the front item to the end array
             System.arraycopy(array, firstElement, newArray, size, size - firstElement);
             // Then it copies items starting at element 0 to the front item element
@@ -36,11 +39,13 @@ public class ArrayDeque<T> implements Deque<T> {
     public void addFirst(T item) {
         // Making array circular
         if  (nextFirst < 0) {
-            nextFirst = array.length - 1; // If position zero is filled up, nextFirst loops to the end of the array
+            // If position zero is filled up, nextFirst loops to the end of the array
+            nextFirst = array.length - 1;
         }
 
         // Resizing array
-        if (nextFirst == nextLast - 1 && size >= 1) { // If nextFirst is at the location of addLast item then the array is filled up
+        if (nextFirst == nextLast - 1 && size >= 1) {
+            // If nextFirst is at the location of addLast item then the array is filled up
             resizeLeft(size * 2);
             nextFirst = size - 1;
             nextLast = array.length;
@@ -97,13 +102,12 @@ public class ArrayDeque<T> implements Deque<T> {
 
     @Override
     public T removeFirst() {
-        float desizeFactor = (float)size / array.length;
+        float desizeFactor = (float) size / array.length;
         if (isEmpty()) { // If the array is empty terminate the method
             return null;
-        }
-        // Resizing the array if the size if 1/4 of the total array length
-        // ex: size = 8, length = 32, resize length to 16
-        else if (array.length >= 16 && desizeFactor == 0.25) {
+        } else if (array.length >= 16 && desizeFactor == 0.25) {
+            // Resizing the array if the size if 1/4 of the total array length
+            // ex: size = 8, length = 32, resize length to 16
             desize(array.length / 2);
             nextFirst = array.length - 1;
             nextLast = size;
@@ -123,8 +127,7 @@ public class ArrayDeque<T> implements Deque<T> {
         float desizeFactor = (float)size / array.length;
         if (isEmpty()) { // If the array is empty terminate the method
             return null;
-        }
-        else if (array.length >= 16 && desizeFactor == 0.25) {
+        } else if (array.length >= 16 && desizeFactor == 0.25) {
             desize(array.length / 2);
             nextFirst = array.length - 1;
             nextLast = size;
@@ -139,12 +142,12 @@ public class ArrayDeque<T> implements Deque<T> {
         return removedValue;
    }
 
-   @Override
-   public void printDeque() {
+    @Override
+    public void printDeque() {
         // The first index of the array list
         int index = nextFirst + 1;
         // The last index
-       int lastIndex = nextLast - 1;
+        int lastIndex = nextLast - 1;
         while (index != lastIndex) {
             // When index reaches the end of the array, move it back to the front of the array
             if (index > array.length) {
@@ -155,10 +158,10 @@ public class ArrayDeque<T> implements Deque<T> {
         }
        System.out.print(array[index] + " ");
        System.out.println();
-   }
+    }
 
     @Override
-   public T get(int index) {
+    public T get(int index) {
         int firstIndex = nextFirst + 1;
         if (index >= size || index < 0) { // return null if the index is negative or exceed the maximum index of array
             return null;
@@ -167,14 +170,14 @@ public class ArrayDeque<T> implements Deque<T> {
         } else {
             return array[firstIndex + index];
         }
-   }
+    }
 
-   @Override
-   public int size() {
+    @Override
+    public int size() {
         return size;
-   }
+    }
 
-   @Override
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
