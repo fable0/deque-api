@@ -141,9 +141,23 @@ public class ArrayDeque<T> implements Deque<T> {
 
    @Override
    public void printDeque() {
+        // The first index of the array list
+        int index = nextFirst + 1;
+        // The last index
+       int lastIndex = nextLast - 1;
+        while (index != lastIndex) {
+            // When index reaches the end of the array, move it back to the front of the array
+            if (index > array.length) {
+                index = 0;
+            }
+            System.out.print(array[index] + " ");
+            index++;
+        }
+       System.out.print(array[index] + " ");
+       System.out.println();
    }
 
-   @Override
+    @Override
    public T get(int index) {
         int firstIndex = nextFirst + 1;
         if (index >= size || index < 0) { // return null if the index is negative or exceed the maximum index of array
@@ -163,5 +177,23 @@ public class ArrayDeque<T> implements Deque<T> {
    @Override
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    public int firstIndex() {
+        if (nextFirst == array.length - 1) {
+            return 0;
+        }
+        return nextFirst + 1;
+    }
+
+    public int lastIndex() {
+        if (nextLast == 0) {
+            return array.length - 1;
+        }
+        return nextLast - 1;
+    }
+
+    public T[] getArray() {
+        return array;
     }
 }

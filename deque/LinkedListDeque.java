@@ -98,6 +98,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         System.out.println();
     }
 
+    @Override
     public T get(int index) {
         Node node = sentinel.next;
         while (index > 0) {
@@ -122,6 +123,4 @@ public class LinkedListDeque<T> implements Deque<T> {
     public T getRecursive(int index) {
         return getRecursiveHelper(sentinel.next, index);
     }
-
-
 }
