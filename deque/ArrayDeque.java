@@ -178,7 +178,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private class ArrayDequeIterator implements Iterator<T> {
         private int pos;
 
-        public ArrayDequeIterator() {
+        ArrayDequeIterator() {
             pos = firstIndex();
         }
         @Override
