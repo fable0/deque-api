@@ -1,6 +1,7 @@
 package deque;
+import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T> {
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private T[] array;
     private int size;
     private int nextFirst;
@@ -28,7 +29,8 @@ public class ArrayDeque<T> implements Deque<T> {
             // from the front item to the end array
             System.arraycopy(array, firstElement, newArray, size, size - firstElement);
             // Then it copies items starting at element 0 to the front item element
-            // "size + size - firstElement" provides the next ongoing element to start the copying process
+            // "size + size - firstElement" provides the next ongoing element to
+            // start the copying process
             // "firstElement" will act as the leftover size of the original array
             System.arraycopy(array, 0, newArray, size + size - firstElement, firstElement);
         }
@@ -124,7 +126,7 @@ public class ArrayDeque<T> implements Deque<T> {
 
     @Override
     public T removeLast() {
-        float desizeFactor = (float)size / array.length;
+        float desizeFactor = (float) size / array.length;
         if (isEmpty()) { // If the array is empty terminate the method
             return null;
         } else if (array.length >= 16 && desizeFactor == 0.25) {
@@ -140,30 +142,21 @@ public class ArrayDeque<T> implements Deque<T> {
         array[nextLast] = null;
         size--;
         return removedValue;
-   }
+    }
 
     @Override
     public void printDeque() {
-        // The first index of the array list
-        int index = nextFirst + 1;
-        // The last index
-        int lastIndex = nextLast - 1;
-        while (index != lastIndex) {
-            // When index reaches the end of the array, move it back to the front of the array
-            if (index > array.length) {
-                index = 0;
-            }
-            System.out.print(array[index] + " ");
-            index++;
+        for (T item : this) {
+            System.out.print(item.toString() + " ");
         }
-       System.out.print(array[index] + " ");
-       System.out.println();
+        System.out.println();
     }
 
     @Override
     public T get(int index) {
         int firstIndex = nextFirst + 1;
-        if (index >= size || index < 0) { // return null if the index is negative or exceed the maximum index of array
+        // return null if the index is negative or exceed the maximum index of array
+        if (index >= size || index < 0) {
             return null;
         } else if ((firstIndex + index) >= array.length) {
             return array[(firstIndex + index) - array.length];
@@ -180,6 +173,32 @@ public class ArrayDeque<T> implements Deque<T> {
     @Override
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int pos;
+
+        public ArrayDequeIterator() {
+            pos = firstIndex();
+        }
+        @Override
+        public boolean hasNext() {
+            return pos != lastIndex() + 1;
+        }
+
+        public T next() {
+            if (pos == array.length) {
+                pos = 0;
+            }
+            T returnItem = array[pos];
+            pos++;
+            return returnItem;
+        }
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
     }
 
     public int firstIndex() {
