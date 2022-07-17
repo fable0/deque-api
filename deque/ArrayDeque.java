@@ -15,51 +15,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         size = 0;
     }
 
-    private void resizeLeft(int capacity) {
-        // To find the location of the latest first item,
-        // you reduce the "nextFirst" cursor back 1 element
-        int firstElement = nextFirst + 1;
-        T[] newArray = (T[]) new Object[capacity];
-        if (nextFirst == size - 1) { // If the first item is at element 0
-            System.arraycopy(array, 0, newArray, size, size);
-        } else { // If the first item is at any other element
-            // First it copies element starting at the
-            // latest front item and to end of the array.
-            // Since you can't specify the end of the array,
-            // using "size - firstElement" will provide you the length
-            // from the front item to the end array
-            System.arraycopy(array, firstElement, newArray, size, size - firstElement);
-            // Then it copies items starting at element 0 to the front item element
-            // "size + size - firstElement" provides the next ongoing element to
-            // start the copying process
-            // "firstElement" will act as the leftover size of the original array
-            System.arraycopy(array, 0, newArray, size + size - firstElement, firstElement);
-        }
-        array = newArray;
-    }
-
-    @Override
-    public void addFirst(T item) {
-        // Making array circular
-        if  (nextFirst < 0) {
-            // If position zero is filled up, nextFirst loops to the end of the array
-            nextFirst = array.length - 1;
-        }
-
-        // Resizing array
-        if (nextFirst == nextLast - 1 && size >= 1) {
-            // If nextFirst is at the location of addLast item then the array is filled up
-            resizeLeft(size * 2);
-            nextFirst = size - 1;
-            nextLast = array.length;
-        }
-
-        array[nextFirst] = item;
-        nextFirst--;
-        size++;
-    }
-
-    private void resizeRight(int capacity) {
+    private void resize(int capacity) {
         T[] newArray = (T[]) new Object[capacity];
         if (nextLast == 0) {
             System.arraycopy(array, 0, newArray, 0, size);
@@ -68,23 +24,39 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             System.arraycopy(array, nextLast, newArray, 0, size - nextLast);
         }
         array = newArray;
+        nextFirst = array.length - 1;
+        nextLast = size;
+    }
+
+    @Override
+    public void addFirst(T item) {
+        // Resizing array
+        if (size == array.length) {
+            // If nextFirst is at the location of addLast item then the array is filled up
+            resize(size * 2);
+        }
+        array[nextFirst] = item;
+        nextFirst--;
+        size++;
+        // Making array circular
+        if  (nextFirst < 0) {
+            // If position zero is filled up, nextFirst loops to the end of the array
+            nextFirst = array.length - 1;
+        }
     }
 
     @Override
     public void addLast(T item) {
-        // Making array circular
-        if (nextLast == array.length) {
-            nextLast = 0;
-        }
-
-        if (nextLast == nextFirst + 1 && size >= 1) {
-            resizeRight(size * 2);
-            nextLast = size;
-            nextFirst = -1;
+        if (size == array.length) {
+            resize(size * 2);
         }
         array[nextLast] = item;
         nextLast++;
         size++;
+        // Making array circular
+        if (nextLast == array.length) {
+            nextLast = 0;
+        }
     }
 
     private void desize(int capacity) {
@@ -101,6 +73,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             System.arraycopy(array, firstIndex, newArray, 0, nextLast - firstIndex);
         }
         array = newArray;
+        nextFirst = array.length - 1;
+        nextLast = size;
     }
 
     @Override
@@ -112,8 +86,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             // Resizing the array if the size if 1/4 of the total array length
             // ex: size = 8, length = 32, resize length to 16
             desize(array.length / 2);
-            nextFirst = array.length - 1;
-            nextLast = size;
         }
         nextFirst += 1;
         if (nextFirst >= array.length) {
@@ -132,8 +104,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return null;
         } else if (array.length >= 16 && desizeFactor == 0.25) {
             desize(array.length / 2);
-            nextFirst = array.length - 1;
-            nextLast = size;
         }
         nextLast -= 1;
         if (nextLast < 0) {
@@ -180,18 +150,15 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         private int pos;
 
         ArrayDequeIterator() {
-            pos = firstIndex();
+            pos = 0;
         }
         @Override
         public boolean hasNext() {
-            return pos != lastIndex() + 1;
+            return pos != size;
         }
 
         public T next() {
-            if (pos == array.length) {
-                pos = 0;
-            }
-            T returnItem = array[pos];
+            T returnItem = get(pos);
             pos++;
             return returnItem;
         }
@@ -200,24 +167,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     @Override
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
-    }
-
-    public int firstIndex() {
-        if (nextFirst == array.length - 1) {
-            return 0;
-        }
-        return nextFirst + 1;
-    }
-
-    public int lastIndex() {
-        if (nextLast == 0) {
-            return array.length - 1;
-        }
-        return nextLast - 1;
-    }
-
-    public T[] getArray() {
-        return array;
     }
 
     @Override
