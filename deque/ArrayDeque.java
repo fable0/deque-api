@@ -15,13 +15,33 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         size = 0;
     }
 
+    private int firstIndex() {
+        if (nextFirst == array.length - 1) {
+            return 0;
+        }
+        return nextFirst + 1;
+    }
+
+    private int lastIndex() {
+        if (nextLast == 0) {
+            nextLast = array.length - 1;
+        }
+        return nextLast - 1;
+    }
+
+    private float getUsageFactor() {
+        return (float) size / array.length;
+    }
+
+
     private void resize(int capacity) {
         T[] newArray = (T[]) new Object[capacity];
-        if (nextLast == 0) {
-            System.arraycopy(array, 0, newArray, 0, size);
+        if (firstIndex() > lastIndex()) {
+            int diff = array.length - firstIndex();
+            System.arraycopy(array, firstIndex(), newArray, 0, diff);
+            System.arraycopy(array, 0, newArray, diff, size - diff);
         } else {
-            System.arraycopy(array, 0, newArray, size - nextLast, nextLast);
-            System.arraycopy(array, nextLast, newArray, 0, size - nextLast);
+            System.arraycopy(array, firstIndex(), newArray, 0, size);
         }
         array = newArray;
         nextFirst = array.length - 1;
@@ -30,17 +50,13 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public void addFirst(T item) {
-        // Resizing array
         if (size == array.length) {
-            // If nextFirst is at the location of addLast item then the array is filled up
             resize(size * 2);
         }
         array[nextFirst] = item;
         nextFirst--;
         size++;
-        // Making array circular
-        if  (nextFirst < 0) {
-            // If position zero is filled up, nextFirst loops to the end of the array
+        if (nextFirst < 0) {
             nextFirst = array.length - 1;
         }
     }
@@ -53,65 +69,44 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         array[nextLast] = item;
         nextLast++;
         size++;
-        // Making array circular
         if (nextLast == array.length) {
             nextLast = 0;
         }
     }
 
-    private void desize(int capacity) {
-        T[] newArray = (T[]) new Object[capacity];
-        int firstIndex = nextFirst + 1;
-        int lengthRemove = array.length - firstIndex;
-        // This condition occur whenever there are values that are looped over
-        if (lengthRemove <= 8) {
-            System.arraycopy(array, firstIndex, newArray, 0, lengthRemove);
-            if (size - lengthRemove > 0) {
-                System.arraycopy(array, 0, newArray, lengthRemove, size - lengthRemove);
-            }
-        } else {
-            System.arraycopy(array, firstIndex, newArray, 0, nextLast - firstIndex);
-        }
-        array = newArray;
-        nextFirst = array.length - 1;
-        nextLast = size;
-    }
-
     @Override
     public T removeFirst() {
-        float desizeFactor = (float) size / array.length;
-        if (isEmpty()) { // If the array is empty terminate the method
+        if (isEmpty()) {
             return null;
-        } else if (array.length >= 16 && desizeFactor == 0.25) {
-            // Resizing the array if the size if 1/4 of the total array length
-            // ex: size = 8, length = 32, resize length to 16
-            desize(array.length / 2);
         }
-        nextFirst += 1;
+        if (array.length >= 16 && getUsageFactor() == 0.25) {
+            resize(array.length / 2);
+        }
+        T removedValue = get(firstIndex());
+        array[firstIndex()] = null;
+        size--;
+        nextFirst++;
         if (nextFirst >= array.length) {
             nextFirst = 0;
         }
-        T removedValue = array[nextFirst];
-        array[nextFirst] = null;
-        size--;
         return removedValue;
     }
 
     @Override
     public T removeLast() {
-        float desizeFactor = (float) size / array.length;
-        if (isEmpty()) { // If the array is empty terminate the method
+        if (isEmpty()) {
             return null;
-        } else if (array.length >= 16 && desizeFactor == 0.25) {
-            desize(array.length / 2);
         }
-        nextLast -= 1;
+        if (array.length >= 16 && getUsageFactor() == 0.25) {
+            resize(array.length / 2);
+        }
+        T removedValue = get(lastIndex());
+        array[lastIndex()] = null;
+        size--;
+        nextLast--;
         if (nextLast < 0) {
             nextLast = array.length - 1;
         }
-        T removedValue = array[nextLast];
-        array[nextLast] = null;
-        size--;
         return removedValue;
     }
 
@@ -125,14 +120,12 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public T get(int index) {
-        int firstIndex = nextFirst + 1;
-        // return null if the index is negative or exceed the maximum index of array
         if (index >= size || index < 0) {
             return null;
-        } else if ((firstIndex + index) >= array.length) {
-            return array[(firstIndex + index) - array.length];
+        } else if ((firstIndex() + index) >= array.length) {
+            return array[(firstIndex() + index) - array.length];
         } else {
-            return array[firstIndex + index];
+            return array[firstIndex() + index];
         }
     }
 
