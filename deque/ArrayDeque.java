@@ -178,16 +178,12 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (this.size() != other.size()) {
             return false;
         }
-        int point = nextFirst + 1;
+        int index = 0;
         for (T item : (Iterable<T>) other) {
-
-            if (point == array.length) {
-                point = 0;
-            }
-            if (!(item.equals(array[point]))) {
+            if (!(item.equals(this.get(index)))) {
                 return false;
             }
-            point++;
+            index++;
         }
         return true;
     }
