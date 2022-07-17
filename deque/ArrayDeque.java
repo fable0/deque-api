@@ -232,17 +232,17 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             return false;
         }
 
-        ArrayDeque<T> other = (ArrayDeque<T>) o;
+        Deque<T> other = (Deque<T>) o;
         if (this.size() != other.size()) {
             return false;
         }
         int point = nextFirst + 1;
-        for (T item : other) {
+        for (T item : (Iterable<T>) other) {
 
             if (point == array.length) {
                 point = 0;
             }
-            if (item != array[point]) {
+            if (!(item.equals(array[point]))) {
                 return false;
             }
             point++;
