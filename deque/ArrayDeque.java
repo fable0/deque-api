@@ -74,6 +74,24 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public void printDeque() {
+        for (T item : this) {
+            System.out.print(item + " ");
+        }
+        System.out.println();
+    }
+
+    @Override
     public T removeFirst() {
         if (isEmpty()) {
             return null;
@@ -110,14 +128,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     @Override
-    public void printDeque() {
-        for (T item : this) {
-            System.out.print(item + " ");
-        }
-        System.out.println();
-    }
-
-    @Override
     public T get(int index) {
         if (index >= size || index < 0) {
             return null;
@@ -126,16 +136,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         } else {
             return array[firstIndex() + index];
         }
-    }
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
     }
 
     private class ArrayDequeIterator implements Iterator<T> {
@@ -173,6 +173,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (!(o instanceof Deque)) {
             return false;
         }
+
         Deque<T> other = (Deque<T>) o;
         if (this.size() != other.size()) {
             return false;
