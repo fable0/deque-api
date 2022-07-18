@@ -24,7 +24,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     private int lastIndex() {
         if (nextLast == 0) {
-            nextLast = array.length - 1;
+            return array.length - 1;
         }
         return nextLast - 1;
     }
@@ -32,7 +32,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private float getUsageFactor() {
         return (float) size / array.length;
     }
-
 
     private void resize(int capacity) {
         T[] newArray = (T[]) new Object[capacity];
@@ -82,7 +81,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (array.length >= 16 && getUsageFactor() == 0.25) {
             resize(array.length / 2);
         }
-        T removedValue = get(firstIndex());
+        T removedValue = array[firstIndex()];
         array[firstIndex()] = null;
         size--;
         nextFirst++;
@@ -100,7 +99,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (array.length >= 16 && getUsageFactor() == 0.25) {
             resize(array.length / 2);
         }
-        T removedValue = get(lastIndex());
+        T removedValue = array[lastIndex()];
         array[lastIndex()] = null;
         size--;
         nextLast--;
@@ -145,6 +144,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         ArrayDequeIterator() {
             pos = 0;
         }
+
         @Override
         public boolean hasNext() {
             return pos != size;
@@ -173,7 +173,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (!(o instanceof Deque)) {
             return false;
         }
-
         Deque<T> other = (Deque<T>) o;
         if (this.size() != other.size()) {
             return false;
