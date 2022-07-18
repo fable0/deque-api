@@ -47,6 +47,27 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     }
 
     @Override
+    public boolean isEmpty() {
+        if (size == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public void printDeque() {
+        for (T item : this) {
+            System.out.print(item + " ");
+        }
+        System.out.println();
+    }
+
+    @Override
     public T removeFirst() {
         if (size == 0) {
             return null;
@@ -68,27 +89,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         sentinel.prev.next = sentinel;
         size--;
         return itemRemoved;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public void printDeque() {
-        for (T item : this) {
-            System.out.print(item + " ");
-        }
-        System.out.println();
     }
 
     @Override
@@ -123,6 +123,7 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         LinkedListDequeIterator() {
             pos = sentinel.next;
         }
+
         @Override
         public boolean hasNext() {
             return pos != sentinel;
